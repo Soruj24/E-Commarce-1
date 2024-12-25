@@ -1,7 +1,10 @@
+import ProductShow from "./ProductShow"
 
 const Home = () => {
     return (
-        <div>Home</div>
+        <div>
+            <ProductShow />
+        </div>
     )
 }
 
