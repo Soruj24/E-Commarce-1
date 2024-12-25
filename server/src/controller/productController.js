@@ -3,6 +3,7 @@ const Product = require("../model/productModel");
 const createError = require("http-errors");
 const { successResponse } = require("./responesController");
 const { getFilterCriteria, getPaginationDetails } = require("../Helper/prodectHelper");
+const { default: mongoose } = require("mongoose");
 
 
 
@@ -59,14 +60,72 @@ const handelCreateProduct = async (req, res, next) => {
 
         const { title, price, description, category, } = req.body
 
-        
+
 
     } catch (error) {
         next(error)
     }
 }
 
+const handelDeleteProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw createError(400, "Invalid Product ID");
+        }
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        if (!deletedProduct) {
+            throw createError(404, "Product not found or already deleted");
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Product deleted successfully",
+            payload: {
+                deletedProduct,
+            },
+        });
+    } catch (error) {
+        next(error); // এরর হ্যান্ডলারের কাছে পাঠানো
+    }
+};
+
+
+const handelUpdateProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw createError(400, "Invalid Product ID");
+        }
+
+        const existingProduct = await Product.findById(id);
+        if (!existingProduct) {
+            throw createError(404, "Product not found");
+        }
+
+        const updates = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
+            new: true,
+            runValidators: true,
+        });
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Product updated successfully",
+            payload: {
+                updatedProduct,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 module.exports = {
     handelGetAllProduct,
+    handelDeleteProduct,
+    handelUpdateProduct
 };
