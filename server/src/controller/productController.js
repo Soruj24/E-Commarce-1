@@ -2,25 +2,10 @@ const { body, query, validationResult } = require("express-validator");
 const Product = require("../model/productModel");
 const createError = require("http-errors");
 const { successResponse } = require("./responesController");
+const { getFilterCriteria, getPaginationDetails } = require("../Helper/prodectHelper");
 
 
 
-// Helper function for pagination and filtering logic
-const getPaginationDetails = ({ page, limit }) => {
-    const skip = (page - 1) * limit;
-    return { skip, limit };
-};
-
-const getFilterCriteria = ({ search, category }) => {
-    const filterCriteria = {};
-    if (search) {
-        filterCriteria.title = { $regex: search, $options: "i" }; // Case-insensitive search
-    }
-    if (category) {
-        filterCriteria.category = category; // Filter by category
-    }
-    return filterCriteria;
-};
 
 const handelGetAllProduct = async (req, res, next) => {
     try {

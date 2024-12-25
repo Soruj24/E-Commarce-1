@@ -8,4 +8,5 @@ const productRouter = require('express').Router();
 productRouter.get("/", validatePagination, runValidation, handelGetAllProduct)
 
 
+
 module.exports = productRouter
