@@ -9,6 +9,7 @@ const rateLimit = require("express-rate-limit");
 const createError = require("http-errors");
 const productRouter = require("./router/productRouter");
 const { errorResponse } = require("./controller/responesController");
+const userRouter = require("./router/userRouter");
 
 
 app.use(cors());
@@ -28,11 +29,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-
+app.use('/api/users', userRouter)
 app.use('/api/products', productRouter)
-
-
-
 
 
 
@@ -48,6 +46,7 @@ app.use((err, req, res, next) => {
         message: err.message
     })
 });
+
 
 
 module.exports = app
