@@ -10,6 +10,7 @@ const createError = require("http-errors");
 const productRouter = require("./router/productRouter");
 const { errorResponse } = require("./controller/responesController");
 const userRouter = require("./router/userRouter");
+const authRouter = require("./router/authRouter");
 
 
 app.use(cors());
@@ -30,6 +31,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use('/api/users', userRouter)
+app.use('/api/auth',authRouter)
 app.use('/api/products', productRouter)
 
 
