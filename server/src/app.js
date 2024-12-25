@@ -11,6 +11,7 @@ const productRouter = require("./router/productRouter");
 const { errorResponse } = require("./controller/responesController");
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
+const categoryRouter = require("./router/categoryRouter");
 
 
 app.use(cors());
@@ -32,6 +33,7 @@ app.use(limiter);
 
 app.use('/api/users', userRouter)
 app.use('/api/auth',authRouter)
+app.use('/api/categories',categoryRouter)
 app.use('/api/products', productRouter)
 
 

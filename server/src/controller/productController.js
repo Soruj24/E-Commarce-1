@@ -54,6 +54,19 @@ const handelGetAllProduct = async (req, res, next) => {
     }
 };
 
+const handelCreateProduct = async (req, res, next) => {
+    try {
+
+        const { title, price, description, category, } = req.body
+
+        
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
     handelGetAllProduct,
 };
