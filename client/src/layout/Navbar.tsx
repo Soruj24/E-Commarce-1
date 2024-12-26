@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom"; // For Next.js, use a custom solution
 import { Menu, ShoppingCart, User, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,6 +8,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
+import Profile from "@/page/Profile";
+import { Input } from "@/components/ui/input";
 
 export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -122,6 +123,8 @@ export default function Navbar() {
                     </button>
 
                     {/* Cart */}
+
+                    <Profile />
                     <NavLink
                         to="/cart"
                         className={({ isActive }) =>
@@ -136,17 +139,7 @@ export default function Navbar() {
                         </span>
                     </NavLink>
 
-                    {/* User */}
-                    <NavLink
-                        to="/profile"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "text-blue-600 dark:text-blue-400 font-semibold"
-                                : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition"
-                        }
-                    >
-                        <User className="w-6 h-6" />
-                    </NavLink>
+
 
                     {/* Mobile Menu Toggle */}
                     <button
