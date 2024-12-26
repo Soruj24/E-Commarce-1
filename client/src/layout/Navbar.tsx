@@ -15,7 +15,6 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [theme, setTheme] = useState("light");
 
-    const categories = ["Electronics", "Fashion", "Home & Garden", "Toys", "Sports"];
 
     // Toggle Theme
     const toggleTheme = () => {
@@ -54,29 +53,7 @@ export default function Navbar() {
                     >
                         Home
                     </NavLink>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-                                Categories
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {categories.map((category) => (
-                                <DropdownMenuItem key={category}>
-                                    <NavLink
-                                        to={`/category/${category.toLowerCase()}`}
-                                        className={({ isActive }) =>
-                                            isActive
-                                                ? "text-blue-600 dark:text-blue-400 font-semibold"
-                                                : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                                        }
-                                    >
-                                        {category}
-                                    </NavLink>
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+
                     <NavLink
                         to="/about"
                         className={({ isActive }) =>
@@ -169,22 +146,7 @@ export default function Navbar() {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost">Categories</Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {categories.map((category) => (
-                                    <DropdownMenuItem key={category}>
-                                        <NavLink
-                                            to={`/category/${category.toLowerCase()}`}
-                                            className={({ isActive }) =>
-                                                isActive
-                                                    ? "text-blue-600 dark:text-blue-400 font-semibold"
-                                                    : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                                            }
-                                        >
-                                            {category}
-                                        </NavLink>
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
+
                         </DropdownMenu>
                         <NavLink
                             to="/about"

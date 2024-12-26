@@ -10,7 +10,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLogoutMutation } from "@/services/userApi";
-import { LogOut, User } from "lucide-react";
+import { IconBrandProducthunt } from "@tabler/icons-react";
+import { CassetteTape, LogOut, User, UserCircle2Icon } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -45,7 +46,20 @@ const Profile = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
                 <Link to={'/myaccount'}>
-                <DropdownMenuLabel className="flex items-center gap-2"> <User /> My Account</DropdownMenuLabel></Link>
+                    <DropdownMenuLabel className="flex items-center gap-2"> <User /> My Account</DropdownMenuLabel>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link to={'/categories'}>
+                    <DropdownMenuLabel className="flex items-center gap-2"> <CassetteTape /> Categories</DropdownMenuLabel>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link to={'/productCreated'}>
+                    <DropdownMenuLabel className="flex items-center gap-2"> <IconBrandProducthunt /> Product Created</DropdownMenuLabel>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link to={'/allUsers'}>
+                    <DropdownMenuLabel className="flex items-center gap-2"> <UserCircle2Icon /> All Users</DropdownMenuLabel>
+                </Link>
 
                 <DropdownMenuSeparator />
 
@@ -63,7 +77,7 @@ const Profile = () => {
                     <DropdownMenuGroup>
                         <Link to="/signup">
                             <DropdownMenuItem>
-                                
+
                                 Sign Up
                                 <DropdownMenuShortcut />
                             </DropdownMenuItem>

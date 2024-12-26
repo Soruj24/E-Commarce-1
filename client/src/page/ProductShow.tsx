@@ -1,14 +1,30 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from '@/components/ui/select';
 import { useGetProductsQuery } from '@/services/productApi';
 import { useState } from 'react';
-
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 const ProductList = () => {
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [limit] = useState(10);
+    const [limit] = useState(9);
     const [filterBy, setFilterBy] = useState('');
     const [sortBy, setSortBy] = useState('');
 
@@ -28,62 +44,42 @@ const ProductList = () => {
     const products = data?.payload?.products || [];
     const pagination = data?.payload?.pagination;
 
-    // Handle search input change
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        setPage(1); // Reset to first page when search changes
-    };
-
-    // Handle page change
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= pagination?.totalPages) {
-            setPage(newPage);
-        }
-    };
-    
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="p-4  space-y-4">
             {/* Search Input and Filters */}
-            <div className="space-y-4">
-                <Input
-                    type="text"
-                    placeholder="Search products"
-                    value={search}
-                    onChange={handleSearchChange}
-                    className="w-full"
-                />
-                <div className="flex space-x-4">
-                    {/* Category Filter */}
-                    <Select value={filterBy} onValueChange={(value) => setFilterBy(value)} className="w-1/3">
-                        <SelectTrigger>
-                            <SelectValue placeholder="All Categories" />
+            <div className="space-y-4 flex justify-between items-center">
+                <div>
+                    <Select>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Categories" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Categories</SelectLabel>
-                                <SelectItem value="Category A">Category A</SelectItem>
-                                <SelectItem value="Category B">Category B</SelectItem>
+                                <SelectItem value="apple">Electronics</SelectItem>
+                                <SelectItem value="banana">Fashion</SelectItem>
+                                <SelectItem value="blueberry">Home & Garden</SelectItem>
+                                <SelectItem value="grapes">Toys</SelectItem>
+                                <SelectItem value="pineapple">Sports</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-
-                    {/* Sort Filter */}
-                    <Select value={sortBy} onValueChange={(value) => setSortBy(value)} className="w-1/3">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Sort By" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Sort Options</SelectLabel>
-                                <SelectItem value="price">Price</SelectItem>
-                                <SelectItem value="name">Name</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-
-
                 </div>
+                <div>
+                    <Select>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Filter By Price" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="apple"> High to Low </SelectItem>
+                                <SelectItem value="banana">Low to High</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+
             </div>
 
             {/* Product Cards */}
@@ -111,27 +107,31 @@ const ProductList = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex justify-between items-center mt-4">
-                <Button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 1}
-                    variant="outline"
-                    size="sm"
-                >
-                    Previous
-                </Button>
-                <span className="text-sm">
-                    Page {pagination?.page} of {pagination?.totalPages}
-                </span>
-                <Button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page === pagination?.totalPages}
-                    variant="outline"
-                    size="sm"
-                >
-                    Next
-                </Button>
-            </div>
+            <Pagination>
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious href="#" />
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationLink href="#">1</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationLink href="#" isActive>
+                            2
+                        </PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationLink href="#">3</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationNext href="#" />
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+
         </div>
     );
 };

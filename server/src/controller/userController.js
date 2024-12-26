@@ -151,7 +151,7 @@ const handlePasswordChange = async (req, res, next) => {
         const { id } = req.params;
 
         // Validate input
-        if (!oldPassword || !newPassword) {
+        if (!currentPassword || !newPassword) {
             throw createError(400, "Old password and new password are required.");
         }
 
@@ -178,6 +178,7 @@ const handlePasswordChange = async (req, res, next) => {
             statusCode: 200,
             message: "Password changed successfully.",
         });
+        
     } catch (error) {
         next(error);
     }

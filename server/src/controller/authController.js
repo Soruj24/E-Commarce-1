@@ -29,7 +29,7 @@ const handelLogIn = async (req, res, next) => {
 
         const accessToken = createJSONWebToken({ userExists },
             jwtAccessKey,
-            "5m")
+            "15m")
         const refreshToken = createJSONWebToken({ userExists },
             jwtRefreshKey,
             "7d")

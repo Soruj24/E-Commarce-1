@@ -169,6 +169,13 @@ export const userApi = createApi({
                 }
             },
         }),
+        changePassword: build.mutation<void, { id: string; oldPassword: string; newPassword: string }>({
+            query: ({ id, oldPassword, newPassword }) => ({
+                url: `users/update-password/${id}`, // Adjust the URL as needed
+                method: 'put',
+                body: { oldPassword, newPassword },
+            }),
+        }),
     }),
 });
 
@@ -181,5 +188,6 @@ export const {
     useUpdateUserMutation,
     useDeleteUserMutation,
     useLogoutMutation, // New logout hook
+    useChangePasswordMutation
 } = userApi;
 

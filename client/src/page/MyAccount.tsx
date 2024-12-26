@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useDeleteUserMutation, useLogoutMutation, useUpdateUserMutation } from "@/services/userApi";
+import {
+    useChangePasswordMutation,
+    useDeleteUserMutation,
+    useLogoutMutation,
+    useUpdateUserMutation
+} from "@/services/userApi";
 import { useNavigate } from "react-router-dom";
+import { BiShow, BiHide } from "react-icons/bi";
+
+const nameSchema = z.string().min(1, "Name is required").max(50, "Name cannot exceed 50 characters");
+const passwordSchema = z.object({
+    currentPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 const MyAccount: React.FC = () => {
+
     const user = useSelector((state: any) => state.user.user);
-    console.log("user", user);
 
     const [formData, setFormData] = useState({
         name: user.name || "",
@@ -21,11 +34,19 @@ const MyAccount: React.FC = () => {
         newPassword: "",
     });
 
+
+    const [passwordVisible, setPasswordVisible] = useState({
+        currentPassword: false,
+        newPassword: false,
+    });
+
+
     const navigate = useNavigate();
 
     const [updateUser] = useUpdateUserMutation();
-    const [deleteUser] = useDeleteUserMutation()
+    const [deleteUser] = useDeleteUserMutation();
     const [logout] = useLogoutMutation();
+    const [changePassword] = useChangePasswordMutation();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -33,33 +54,71 @@ const MyAccount: React.FC = () => {
     };
 
     const handleSaveChanges = async (id: string) => {
-        const res = await updateUser({ id, name: formData.name });
-        console.log(res);
-        toast.success("Profile updated successfully!");
+        try {
+            nameSchema.parse(formData.name);
+            await updateUser({ id, name: formData.name });
+            toast.success("Profile updated successfully!");
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                toast.error(error.errors[0].message);
+            }
+        }
     };
 
-    const handlePasswordChange = () => {
-        if (formData.currentPassword && formData.newPassword) {
-            toast.success("Password changed successfully!");
-            console.log("Password change request:", {
+    const handlePasswordChange = async (user: any) => {
+
+        try {
+
+            passwordSchema.parse({
                 currentPassword: formData.currentPassword,
                 newPassword: formData.newPassword,
             });
-        } else {
-            toast.error("Please fill in both password fields.");
+
+
+            const currentPassword = formData.currentPassword;
+            const newPassword = formData.newPassword;
+
+            console.log(currentPassword, newPassword)
+
+            const res = await changePassword({
+                id: user._id,
+                oldPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+            });
+
+
+            if (res.error) {
+                toast.error(res?.error?.data?.message || "Password change failed.");
+                return;
+            }
+
+
+
+            toast.success("Password changed successfully!");
+        } catch (error) {
+            console.log(error)
+            if (error instanceof z.ZodError) {
+                toast.error(error.errors[0].message);
+            }
         }
     };
 
     const handleDeleteAccount = async (id: string) => {
         try {
-            await deleteUser(id)
-            await logout()
+            await deleteUser(id);
+            await logout();
             toast.success("Account deleted successfully!");
-            navigate("/")
+            navigate("/");
         } catch (error) {
-            console.log(error)
             toast.error("An error occurred during account deletion.");
         }
+    };
+
+    const togglePasswordVisibility = (field: "currentPassword" | "newPassword") => {
+        setPasswordVisible((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
     };
 
     return (
@@ -124,27 +183,39 @@ const MyAccount: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4">
-                        <div>
+                        <div className="relative">
                             <Label htmlFor="currentPassword">Current Password</Label>
                             <Input
                                 id="currentPassword"
-                                type="password"
+                                type={passwordVisible.currentPassword ? "text" : "password"}
                                 placeholder="Enter current password"
                                 value={formData.currentPassword}
                                 onChange={handleChange}
                             />
+                            <span
+                                onClick={() => togglePasswordVisibility("currentPassword")}
+                                className="absolute right-2 top-10 cursor-pointer"
+                            >
+                                {passwordVisible.currentPassword ? <BiHide /> : <BiShow />}
+                            </span>
                         </div>
-                        <div>
+                        <div className="relative">
                             <Label htmlFor="newPassword">New Password</Label>
                             <Input
                                 id="newPassword"
-                                type="password"
+                                type={passwordVisible.newPassword ? "text" : "password"}
                                 placeholder="Enter new password"
                                 value={formData.newPassword}
                                 onChange={handleChange}
                             />
+                            <span
+                                onClick={() => togglePasswordVisibility("newPassword")}
+                                className="absolute right-2 top-10 cursor-pointer"
+                            >
+                                {passwordVisible.newPassword ? <BiHide /> : <BiShow />}
+                            </span>
                         </div>
-                        <Button onClick={handlePasswordChange} type="button">
+                        <Button onClick={() => handlePasswordChange(user)} type="button">
                             Change Password
                         </Button>
                     </form>
@@ -154,10 +225,7 @@ const MyAccount: React.FC = () => {
             <Separator className="my-8" />
 
             <div className="flex justify-end">
-                <Button
-                    variant="destructive"
-                    onClick={() => handleDeleteAccount(user._id)}
-                >
+                <Button variant="destructive" onClick={() => handleDeleteAccount(user._id)}>
                     Delete Account
                 </Button>
             </div>
