@@ -35,16 +35,16 @@ export const userSlice = createSlice({
                 refreshToken: string;
             }>
         ) => {
-            const { user,accessToken,refreshToken } = action.payload;
-            console.log("user",user)
+            const { user } = action.payload;
+            console.log("user", user)
             state.user = user;
-            state.accessToken  = accessToken 
-            state.refreshToken = refreshToken;
+            state.accessToken = user?.accessToken as string;
+            state.refreshToken = user?.refreshToken as string;
 
             // Save to localStorage
             localStorage.setItem("user", JSON.stringify(user));
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("accessToken", user?.accessToken as string);
+            localStorage.setItem("refreshToken", user?.refreshToken as string);
         },
         logOut: (state) => {
             state.user = null;
@@ -64,7 +64,3 @@ export const { setCredentials, logOut } = userSlice.actions;
 
 export default userSlice.reducer;
 
-// Selectors
-export const selectCurrentUser = (state: { user: UserState }) => state.user.user;
-export const selectCurrentToken = (state: { user: UserState }) => state.user.accessToken;
-export const selectRefreshToken = (state: { user: UserState }) => state.user.refreshToken;

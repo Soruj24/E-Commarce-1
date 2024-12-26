@@ -10,7 +10,8 @@ import {
     IconBrandGoogle,
     IconBrandOnlyfans,
 } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,7 @@ const Signin = () => {
 
     const [signIn] = useSignInMutation()
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -53,12 +55,13 @@ const Signin = () => {
             }
 
 
-            console.log("Form data:", res?.data?.payload?.user);
+            console.log("Form data:", res?.data?.payload?.user?.accessToken);
             localStorage.setItem('accessToken', res?.data?.payload?.user?.accessToken)
             localStorage.setItem('refreshToken', res?.data?.payload?.user?.accessToken)
 
             dispatch(setCredentials(res?.data?.payload))
             toast.success("Signin successful!", { position: "top-right" });
+            navigate("/")
 
         } catch (error) {
             console.log(error)

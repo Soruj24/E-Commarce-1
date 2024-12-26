@@ -1,6 +1,7 @@
 import App from "@/App";
 import Cart from "@/page/Cart";
 import Home from "@/page/Home";
+import MyAccount from "@/page/MyAccount";
 import SignIn from "@/page/SignIn";
 import SignUp from "@/page/SignUp";
 import {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
             {
                 path: "/signin",
                 element: <SignIn />
+            },
+            {
+                path: '/myaccount',
+                element: <MyAccount />
             }
 
 

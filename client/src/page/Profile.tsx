@@ -10,33 +10,33 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLogoutMutation } from "@/services/userApi";
-import { User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const Profile = () => {
     const [logout] = useLogoutMutation();
     const navigate = useNavigate();
 
+    const user = useSelector((state: any) => state.user.user);
+    console.log("user", user);
+
     const handleLogout = async () => {
         try {
             const res = await logout();
             if (res.error) {
-                // Display error toast if logout fails
                 toast.error(res?.error?.data?.message || "Logout failed.");
             } else {
-                // Display success toast if logout succeeds
                 toast.success("Logged out successfully!");
                 navigate("/signin");
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             toast.error("An error occurred during logout.");
         }
     };
-
 
     return (
         <DropdownMenu>
@@ -44,23 +44,32 @@ const Profile = () => {
                 <User className="h-8 w-8 rounded-full cursor-pointer" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <Link to={'/myaccount'}>
+                <DropdownMenuLabel className="flex items-center gap-2"> <User /> My Account</DropdownMenuLabel></Link>
+
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <Link to={"/signup"}>
-                        <DropdownMenuItem>
-                            Sign Up
-                            <DropdownMenuShortcut></DropdownMenuShortcut>
+
+                {user ? (
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Button onClick={handleLogout} variant="ghost">
+                                <LogOut />
+                                Log out
+                                <DropdownMenuShortcut />
+                            </Button>
                         </DropdownMenuItem>
-                    </Link>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <Button onClick={handleLogout} variant="ghost">
-                        Log out
-                        <DropdownMenuShortcut></DropdownMenuShortcut>
-                    </Button>
-                </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                ) : (
+                    <DropdownMenuGroup>
+                        <Link to="/signup">
+                            <DropdownMenuItem>
+                                
+                                Sign Up
+                                <DropdownMenuShortcut />
+                            </DropdownMenuItem>
+                        </Link>
+                    </DropdownMenuGroup>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );
