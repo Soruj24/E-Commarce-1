@@ -7,7 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useUpdateUserMutation } from "@/services/userApi";
+import { useDeleteUserMutation, useLogoutMutation, useUpdateUserMutation } from "@/services/userApi";
+import { useNavigate } from "react-router-dom";
 
 const MyAccount: React.FC = () => {
     const user = useSelector((state: any) => state.user.user);
@@ -20,7 +21,11 @@ const MyAccount: React.FC = () => {
         newPassword: "",
     });
 
+    const navigate = useNavigate();
+
     const [updateUser] = useUpdateUserMutation();
+    const [deleteUser] = useDeleteUserMutation()
+    const [logout] = useLogoutMutation();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -45,9 +50,16 @@ const MyAccount: React.FC = () => {
         }
     };
 
-    const handleDeleteAccount = (id: string) => {
-        alert(`Deleting account with ID: ${id}`);
-        toast.success("Account deleted successfully!");
+    const handleDeleteAccount = async (id: string) => {
+        try {
+            await deleteUser(id)
+            await logout()
+            toast.success("Account deleted successfully!");
+            navigate("/")
+        } catch (error) {
+            console.log(error)
+            toast.error("An error occurred during account deletion.");
+        }
     };
 
     return (
