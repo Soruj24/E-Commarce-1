@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,12 +7,37 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuShortcut,
-
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { User } from "lucide-react"
-import { Link } from "react-router-dom"
+} from "@/components/ui/dropdown-menu";
+import { useLogoutMutation } from "@/services/userApi";
+import { User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 const Profile = () => {
+    const [logout] = useLogoutMutation();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            const res = await logout();
+            if (res.error) {
+                // Display error toast if logout fails
+                toast.error(res?.error?.data?.message || "Logout failed.");
+            } else {
+                // Display success toast if logout succeeds
+                toast.success("Logged out successfully!");
+                navigate("/signin");
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("An error occurred during logout.");
+        }
+    };
+
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -25,36 +50,20 @@ const Profile = () => {
                     <Link to={"/signup"}>
                         <DropdownMenuItem>
                             Sign Up
-                            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                            <DropdownMenuShortcut></DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>
-                        Billing
-                        <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        Settings
-                        <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        Keyboard shortcuts
-                        <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-                    </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-
-
-                <DropdownMenuItem>GitHub</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
-                <DropdownMenuItem disabled>API</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    Log out
-                    <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                <DropdownMenuItem asChild>
+                    <Button onClick={handleLogout} variant="ghost">
+                        Log out
+                        <DropdownMenuShortcut></DropdownMenuShortcut>
+                    </Button>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
-}
+    );
+};
 
-export default Profile
+export default Profile;

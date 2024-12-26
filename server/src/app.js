@@ -14,7 +14,10 @@ const authRouter = require("./router/authRouter");
 const categoryRouter = require("./router/categoryRouter");
 
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}));
 app.use(morgan("dev"));
 app.use(xss());
 app.use(bodyParser.json());

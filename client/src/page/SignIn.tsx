@@ -15,6 +15,9 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useSignInMutation } from "@/services/userApi";
+import { useAppDispatch } from "@/app/hooks";
+import { setCredentials } from "@/features/userSlice";
 
 const signinSchema = z
     .object({
@@ -34,12 +37,35 @@ const Signin = () => {
         resolver: zodResolver(signinSchema),
     });
 
+    const [signIn] = useSignInMutation()
+    const dispatch = useAppDispatch();
+
     const [showPassword, setShowPassword] = useState(false);
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-    const onSubmit = (data: SigninFormValues) => {
-        toast.success("Signin successful!", { position: "top-right" });
-        console.log("Form data:", data);
+    const onSubmit = async (data: SigninFormValues) => {
+
+        try {
+            const res = await signIn(data)
+            if (res?.error?.data?.message) {
+                toast.error(res.error.data.message || "Signin failed", { position: "top-right" });
+                return
+            }
+
+
+            console.log("Form data:", res?.data?.payload?.user);
+            localStorage.setItem('accessToken', res?.data?.payload?.user?.accessToken)
+            localStorage.setItem('refreshToken', res?.data?.payload?.user?.accessToken)
+
+            dispatch(setCredentials(res?.data?.payload))
+            toast.success("Signin successful!", { position: "top-right" });
+
+        } catch (error) {
+            console.log(error)
+            toast.error("Please fix the errors in the form!", { position: "top-right" });
+        }
+
+
     };
 
     const onError = () => {
