@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 const signupSchema = z
     .object({
         firstName: z.string().min(1, "First name is required"),
@@ -62,7 +63,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+        <div className="max-w-md w-full mt-3  mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
             <ToastContainer />
             <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
                 Sign Up
@@ -187,6 +188,12 @@ const Signup = () => {
                     <BottomGradient />
                 </button>
             </div>
+
+            <div className=" mt-4 text-center">
+                <p className="text-sm font-semibold">Already have an account? <Link to="/signin" className="text-blue-500"> Sign in </Link> </p>
+            </div>
+
+
         </div>
     );
 };
