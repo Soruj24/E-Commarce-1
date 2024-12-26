@@ -2,6 +2,7 @@ const User = require("../model/userModel");
 const createError = require('http-errors');
 const { successResponse } = require("./responesController");
 const { default: mongoose } = require("mongoose");
+const bcrypt = require("bcryptjs");
 const { findUser, deleteUser, updateUser, createUser } = require("../services/userServices");
 const handelGetUsers = async (req, res, next) => {
     try {
@@ -143,10 +144,50 @@ const handelUpdateUser = async (req, res, next) => {
     }
 };
 
+
+const handlePasswordChange = async (req, res, next) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const { id } = req.params;
+
+        // Validate input
+        if (!oldPassword || !newPassword) {
+            throw createError(400, "Old password and new password are required.");
+        }
+
+        // Find user by ID
+        const user = await findUser(id);
+
+        if (!user) {
+            throw createError(404, "User not found.");
+        }
+
+        // Compare old password with the hashed password in the database
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: "Old password is incorrect." });
+        }
+
+       
+        // Update the user's password
+        await User.findByIdAndUpdate(id, { password: newPassword }, { new: true });
+
+        // Respond with success
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Password changed successfully.",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     handelGetUsers,
     handelGetUser,
     handelCreateUser,
     handelDeleteUser,
-    handelUpdateUser
+    handelUpdateUser,
+    handlePasswordChange
 }
