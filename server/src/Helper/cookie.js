@@ -2,7 +2,7 @@ const setAccessTokenCookie = (res, accessToken) => {
     res.cookie('accessToken', accessToken, {
         httpOnly: true,      // Prevents client-side JavaScript from accessing the token
         secure: process.env.NODE_ENV === 'production', // Ensure it's sent only over HTTPS in production
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: 1 * 60 * 1000, // 15 minutes
         sameSite: 'Strict',  // Prevents sending cookies with cross-site requests
     });
 };

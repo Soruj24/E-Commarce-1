@@ -16,14 +16,15 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { useGetCategoriesQuery } from "@/services/categoriesApi";
 
 // Define Zod schema for form validation
 const productSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     price: z.number().positive("Price must be a positive number"),
     description: z.string().min(10, "Description must be at least 10 characters"),
-    category: z.string().min(3, "Category must be at least 3 characters"),
+    category: z.string().min(1, "Category is required"), // Updated validation for category
     image: z.string().url("Must be a valid URL"),
 });
 
@@ -32,20 +33,22 @@ type ProductFormValues = z.infer<typeof productSchema>;
 
 const ProductCreatePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
+    const { data } = useGetCategoriesQuery();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        setValue, // Use setValue for updating the category field
         reset,
     } = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
     });
 
-    const onSubmit: SubmitHandler<ProductFormValues> = async (data) => {
+    const onSubmit: SubmitHandler<ProductFormValues> = async (formData) => {
         try {
             setLoading(true);
-            console.log("Submitting product:", data);
+            console.log("Submitting product:", formData);
 
             // Simulate API call
             await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -113,21 +116,27 @@ const ProductCreatePage: React.FC = () => {
 
                         {/* Category Field */}
                         <div>
-                            <Select>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Select a fruit" />
+                            <Label htmlFor="category">Category</Label>
+                            <Select
+                                onValueChange={(value) => setValue("category", value)} // Update category field on select
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        <SelectItem value="apple">Apple</SelectItem>
-                                        <SelectItem value="banana">Banana</SelectItem>
-                                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                                        <SelectItem value="grapes">Grapes</SelectItem>
-                                        <SelectItem value="pineapple">Pineapple</SelectItem>
+                                        <SelectLabel>Categories</SelectLabel>
+                                        {data?.payload?.categories?.map((item) => (
+                                            <SelectItem key={item?.id} value={item?.name}>
+                                                {item?.name}
+                                            </SelectItem>
+                                        ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
+                            {errors.category && (
+                                <p className="text-sm text-red-500">{errors.category.message}</p>
+                            )}
                         </div>
 
                         {/* Image URL Field */}
